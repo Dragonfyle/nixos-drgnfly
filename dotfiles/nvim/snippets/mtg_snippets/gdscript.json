@@ -1,0 +1,15 @@
+{
+	"esc logger info": {
+		"prefix": "eli",
+		"body": [
+			"escoria.logger.info(self, \"$1\" % $2)"
+		]
+	},
+
+	"esc logger info": {
+		"prefix": "elt",
+		"body": [
+			"escoria.logger.trace(self, \"$1\" % $2)"
+		]
+	}
+}

@@ -1,0 +1,26 @@
+{
+	"arrow function with braces": {
+		"prefix": "ar",
+		"body": [
+			"($1) => { $2 }"
+		]
+	},
+	"arrow function naked": {
+		"prefix": "arb",
+		"body": [
+			"$1 => $2"
+		]
+	},
+	"reduce": {
+	    "prefix": "reduce",
+	    "body": [
+			"reduce((${2:previous}, ${3:current}) => {\n\t${0}\n}${4:, initial})"
+		]
+	},
+	"reduce": {
+	    "prefix": "map",
+	    "body": [
+			"map((${2:previous}) => {\n\t${0}\n})"
+		]
+	}
+}

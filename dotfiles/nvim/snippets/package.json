@@ -1,0 +1,24 @@
+{
+	"name": "mtg_snippets",
+	"contributes": {
+		"snippets": [
+			{
+				"language": [
+					"javascript",
+					"javascriptreact",
+					"typescript",
+					"typescriptreact"
+				],
+				"path": "./mtg_snippets/js.json"
+			},
+			{
+				"language": "c",
+				"path": "./mtg_snippets/c.json"
+			},
+			{
+				"language": "gdscript",
+				"path": "./mtg_snippets/gdscript.json"
+			}
+		]
+	}
+}

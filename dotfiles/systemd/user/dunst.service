@@ -1,0 +1,9 @@
+[Unit]
+Description=Dunst notification daemon
+PartOf=xsession.target
+
+[Service]
+ExecStart=/usr/bin/dunst
+
+[Install]
+WantedBy=xsession.target

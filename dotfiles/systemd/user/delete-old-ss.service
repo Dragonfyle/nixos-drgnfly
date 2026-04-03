@@ -1,0 +1,6 @@
+[Unit]
+Description=delete screenshots older than 30 days
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/fd . /home/michal/screenshots -t f --changed-before 30d --exec rm -f {} +

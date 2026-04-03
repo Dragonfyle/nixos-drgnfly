@@ -1,0 +1,20 @@
+[env]
+
+[general]
+import = [
+    "~/.config/alacritty/themes/alacritty-theme/themes/gruvbox_material_hard_dark.toml"
+]
+
+[font.normal]
+family = "FiraCode Nerd Font"
+
+[window]
+decorations = "None"
+
+[keyboard]
+bindings = [
+	{ key = "F12", action = "ToggleViMode" }
+]
+
+[font]
+size = 12

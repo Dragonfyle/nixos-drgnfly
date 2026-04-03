@@ -1,0 +1,6 @@
+[Unit]
+Description=delete nvim sessions older than 3 months
+
+[Service]
+Type=oneshot
+ExecStart=/home/michal/scripts/delete-old-nvim-sessions.sh
