@@ -21,6 +21,7 @@
 
   services.xserver.videoDrivers = [ "vmware" ];
   hardware.graphics.enable = true;
+  virtualisation.vmware.guest.enable = true;
 
   users.users.michal = {
     isNormalUser = true;
