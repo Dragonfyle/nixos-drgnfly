@@ -12,6 +12,21 @@
 
   outputs = { nixpkgs, home-manager, ... }:
     {
+      nixosConfigurations.desktop = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+
+        modules = [
+          ./hosts/desktop
+
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.michal = import ./home;
+          }
+        ];
+      };
+
       nixosConfigurations.drgnfly = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
 
