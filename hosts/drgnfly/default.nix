@@ -9,7 +9,6 @@
     ../../modules/system/networking.nix
     ../../modules/system/audio.nix
     ../../modules/system/bluetooth.nix
-    ../../modules/system/nvidia.nix
     ../../modules/system/security.nix
     ../../modules/system/virtualization.nix
 
@@ -19,6 +18,9 @@
   ];
 
   networking.hostName = "drgnfly";
+
+  services.xserver.videoDrivers = [ "vmware" ];
+  hardware.graphics.enable = true;
 
   users.users.michal = {
     isNormalUser = true;
