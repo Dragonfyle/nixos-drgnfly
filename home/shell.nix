@@ -5,6 +5,13 @@
     enable = true;
   };
 
+  xdg.configFile = {
+    "fish/config.fish".source = ../dotfiles/fish/config.fish;
+    "fish/conf.d".source = ../dotfiles/fish/conf.d;
+    "fish/functions".source = ../dotfiles/fish/functions;
+    "fish/completions".source = ../dotfiles/fish/completions;
+  };
+
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true;
