@@ -14,26 +14,39 @@ if command -q gh
     abbr --add prcr gh pr create
 end
 
-abbr --add ga git add
 abbr --add gst git status
 abbr --add glogn git log --graph --oneline -n
 abbr --add gco git checkout
 abbr --add grc git restore --staged
 abbr --add gmm git commit -m
+abbr --add ga git add
 abbr --add gwta git worktree add
 abbr --add gwtr git worktree remove
 abbr --add gwtl git worktree list
 
 # Functions
 if command -q fzf
-    function gbp
-        # List branches (local only); trim the leading "* " from the current one
-        set -l branch (git branch --all 2>/dev/null \
-            | sed 's/^[* ]*//' \
-            | fzf)
+    function _git_worktree_path_for_branch
+        set -l target_branch $argv[1]
+        git worktree list --porcelain 2>/dev/null \
+            | awk -v branch="refs/heads/$target_branch" '
+                /^worktree / { path = $2 }
+                $0 == "branch " branch { print path; exit }
+            '
+    end
 
-        if test -n "$branch"
-            # For remote branches like "remotes/origin/foo", strip the prefix
+    function gbp
+        set -l selected (git branch --all 2>/dev/null | fzf)
+
+        if test -z "$selected"
+            return
+        end
+
+        if string match -rq '^\+' -- "$selected"
+            set -l branch (string replace -r '^[+ ]+' '' -- "$selected")
+            cd (_git_worktree_path_for_branch "$branch")
+        else
+            set -l branch (string replace -r '^[* ]+' '' -- "$selected")
             set branch (string replace -r '^remotes/[^/]+/' '' -- "$branch")
             git switch "$branch"
         end
