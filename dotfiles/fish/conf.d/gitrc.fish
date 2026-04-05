@@ -20,6 +20,9 @@ abbr --add glogn git log --graph --oneline -n
 abbr --add gco git checkout
 abbr --add grc git restore --staged
 abbr --add gmm git commit -m
+abbr --add gwta git worktree add
+abbr --add gwtr git worktree remove
+abbr --add gwtl git worktree list
 
 # Functions
 if command -q fzf
