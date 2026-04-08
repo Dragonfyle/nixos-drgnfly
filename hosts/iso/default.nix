@@ -15,7 +15,6 @@
 
   # Wide hardware support for any machine
   hardware.enableRedistributableFirmware = true;
-  hardware.video.hidpi.enable = true;
   services.xserver.videoDrivers = [ "modesetting" ];
 
   # Generic bootloader (ISO module handles actual booting)
