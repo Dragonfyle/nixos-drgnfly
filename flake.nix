@@ -42,4 +42,18 @@
         ];
       };
     };
+
+	nixosConfigurations.iso = nixpkgs.lib.nixosSystem {
+	  system = "x86_64-linux";
+	  modules = [
+		"${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
+		./hosts/iso
+		home-manager.nixosModules.home-manager
+		{
+		  home-manager.useGlobalPkgs = true;
+		  home-manager.useUserPackages = true;
+		  home-manager.users.michal = import ./home;
+		}
+	  ];
+	};
 }
