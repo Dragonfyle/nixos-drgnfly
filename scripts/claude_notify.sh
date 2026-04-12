@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 CLAUDE_TMUX_PANE="$TMUX_PANE"
 CLAUDE_TMUX_WINDOW=$(tmux display-message -t "$CLAUDE_TMUX_PANE" -p '#{window_id}')

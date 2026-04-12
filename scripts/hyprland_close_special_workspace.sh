@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Get the name of the active special workspace
 SPECIAL_WORKSPACE_NAME=$(hyprctl monitors -j | jq -r '.[] | select(.focused == true) | .specialWorkspace.name')

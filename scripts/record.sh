@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 filename="$HOME/screencasts/recording_$(date +%Y-%m-%d_%H-%M-%S).mp4"
 
