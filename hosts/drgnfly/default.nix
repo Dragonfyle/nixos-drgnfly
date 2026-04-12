@@ -42,6 +42,13 @@
 
   programs.fish.enable = true;
 
+  programs.git = {
+  	enable = true;
+	config = {
+		safe.directory = ["/etc/nixos/flake-drgnfly"];
+	};
+};
+
   services.openssh = {
     enable = true;
     settings.PasswordAuthentication = true;

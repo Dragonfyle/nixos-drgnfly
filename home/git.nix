@@ -4,8 +4,8 @@
   programs.git = {
     enable = true;
     settings = {
-      user.name = "CHANGEME";
-      user.email = "CHANGEME";
+      user.name = "Michal Rygorowicz";
+      user.email = "rygorowicz.michal@hotmail.com";
       core.autocrlf = "input";
     };
   };
