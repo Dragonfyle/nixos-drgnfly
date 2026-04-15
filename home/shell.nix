@@ -72,6 +72,7 @@
 
   programs.keychain = {
     enable = true;
+    enableFishIntegration = true;
     keys = [
       "gh_yubikey_usb_a_resident"
       "gh_yubikey_usb_c_resident"
