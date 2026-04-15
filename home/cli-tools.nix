@@ -52,5 +52,6 @@
     bpftrace
     valgrind
     man-db
+	claude-code
   ];
 }
