@@ -487,14 +487,12 @@ require("lazy").setup({
 			"pwntester/octo.nvim",
 			dependencies = {
 				"nvim-lua/plenary.nvim",
-				-- "ibhagwan/fzf-lua",
-				-- "nvim-telescope/telescope.nvim",
-				"folke/snacks.nvim",
+				"ibhagwan/fzf-lua",
 				"nvim-tree/nvim-web-devicons",
 			},
 			config = function()
 				require("octo").setup({
-					picker = "snacks",
+					picker = "fzf-lua",
 					users = "assignable",
 					enable_builtin = true,
 					default_remote = { "origin" },
@@ -730,217 +728,83 @@ require("lazy").setup({
 		-- 	end,
 		-- },
 		{
-			"folke/snacks.nvim",
-			priority = 1000,
+			"ibhagwan/fzf-lua",
 			lazy = false,
-			---@type snacks.Config
-			opts = {
-				picker = {
-					enabled = true,
-					layout = {
-						layout = {
-							width = 0.70,
-							height = 0.70,
+			dependencies = { "nvim-tree/nvim-web-devicons" },
+			config = function()
+				local actions = require("fzf-lua.actions")
+				local fzf_lua = require("fzf-lua")
+				fzf_lua.register_ui_select()
+				fzf_lua.setup({
+					defaults = {
+						git_icons = false,
+						file_icons = true,
+						color_icons = true,
+					},
+					keymap = {
+						fzf = {
+							["alt-n"] = "next-history",
+							["alt-p"] = "prev-history",
+							["ctrl-p"] = "up",
+							["ctrl-n"] = "down",
 						},
 					},
-					sources = {
-						files = {
-							hidden = false,
-							ignored = false,
-							actions = {
-								toggle_hidden = function(picker)
-									picker.opts.hidden = not picker.opts.hidden
-									picker:find()
-								end,
-								toggle_ignored = function(picker)
-									picker.opts.ignored = not picker.opts.ignored
-									picker:find()
-								end,
-							},
-							win = {
-								input = {
-									keys = {
-										["<c-r>"] = { "toggle_hidden", mode = { "i", "n" }, desc = "Toggle Hidden" },
-										["<c-g>"] = { "toggle_ignored", mode = { "i", "n" }, desc = "Toggle Ignored" },
-									},
-								},
-							},
+					winopts = {
+						height = 0.80,
+						width = 0.80,
+						backdrop = 50,
+					},
+					files = {
+						fzf_opts = {
+							["--history"] = vim.fn.stdpath("data") .. "/fzf-lua-files-history",
 						},
-						grep = {
-							hidden = false,
-							ignored = false,
-							actions = {
-								toggle_hidden = function(picker)
-									picker.opts.hidden = not picker.opts.hidden
-									picker:find()
-								end,
-								toggle_ignored = function(picker)
-									picker.opts.ignored = not picker.opts.ignored
-									picker:find()
-								end,
-							},
-							win = {
-								input = {
-									keys = {
-										["<c-r>"] = { "toggle_hidden", mode = { "i", "n" }, desc = "Toggle Hidden" },
-										["<c-g>"] = { "toggle_ignored", mode = { "i", "n" }, desc = "Toggle Ignored" },
-									},
-								},
-							},
+						cwd_prompt = false,
+						actions = {
+							["ctrl-g"] = { actions.grep_lgrep },
+							["ctrl-r"] = { actions.toggle_ignore },
 						},
 					},
-					win = {
-						input = {
-							keys = {
-								["<c-j>"] = { "close", mode = { "i", "n" } },
-								["<a-p>"] = { "history_back", mode = { "i", "n" } },
-								["<a-n>"] = { "history_forward", mode = { "i", "n" } },
-							},
+					grep = {
+						fzf_opts = {
+							["--history"] = vim.fn.stdpath("data") .. "/fzf-lua-grep-history",
+						},
+						actions = {
+							["ctrl-g"] = { actions.grep_lgrep },
+							["ctrl-r"] = { actions.toggle_ignore },
 						},
 					},
-				},
-			},
-			keys = {
-				-- Top Pickers & Explorer
-				{
-					"<c-p>",
-					function()
-						Snacks.picker.smart({ cwd = vim.fn.getcwd(), filter = { cwd = true } })
-					end,
-					desc = "Smart Find Files",
-				},
-				{
-					"<leader>;",
-					function()
-						Snacks.picker.buffers()
-					end,
-					desc = "Buffers",
-				},
-				{
-					"<c-a-p>",
-					function()
-						Snacks.picker.grep({ cwd = vim.fn.getcwd() })
-					end,
-					desc = "Grep",
-				},
-				{
-					"<leader>:",
-					function()
-						Snacks.picker.command_history()
-					end,
-					desc = "Command History",
-				},
-				{
-					"<leader>pp",
-					function()
-						Snacks.picker.grep_word({ cwd = vim.fn.getcwd() })
-					end,
-					mode = { "n", "x" },
-					desc = "Grep Word or Visual Selection",
-				},
-			},
+				})
+				vim.keymap.set("", "<c-a-p>", fzf_lua.live_grep, { desc = "Live Grep" })
+				vim.keymap.set("x", "<leader>pp", "<cmd>FzfLua grep_visual<CR>", { desc = "Grep Visual Selection" })
+				vim.keymap.set("n", "<leader>pp", fzf_lua.grep_cword, { desc = "Grep Word Under Cursor" })
+				vim.keymap.set("n", "<leader>:", fzf_lua.command_history, { desc = "Command History" })
+				vim.keymap.set("", "<C-p>", function()
+					local local_opts = {}
+					local_opts.cmd = "fd --color=never --hidden --type f --type l --exclude .git"
+					local base = vim.fn.fnamemodify(vim.fn.expand("%"), ":h:.:S")
+					if base ~= "." then
+						local_opts.cmd = local_opts.cmd .. (" | proximity-sort %s"):format(vim.fn.shellescape(vim.fn.expand("%")))
+					end
+					local_opts.fzf_opts = {
+						["--scheme"] = "path",
+						["--tiebreak"] = "index",
+						["--layout"] = "reverse",
+					}
+					fzf_lua.files(local_opts)
+				end)
+				vim.keymap.set("n", "<leader>;", function()
+					fzf_lua.buffers({
+						fzf_opts = {
+							["--with-nth"] = "{-3..-2}",
+							["--nth"] = "-1",
+							["--delimiter"] = "[:\u{2002}]",
+							["--header-lines"] = "false",
+						},
+						header = false,
+					})
+				end)
+			end,
 		},
-		-- fzf support for ^p
-		-- {
-		-- 	"ibhagwan/fzf-lua",
-		-- 	lazy = false,
-		-- 	-- optional for icon support
-		-- 	dependencies = { "nvim-tree/nvim-web-devicons" },
-		-- 	config = function()
-		-- 		local actions = require("fzf-lua.actions")
-		-- 		-- calling `setup` is optional for customization
-		-- 		function list_cmd()
-		-- 			local base = vim.fn.fnamemodify(vim.fn.expand("%"), ":h:.:S")
-		-- 			if base == "." then
-		-- 				-- if there is no current file,
-		-- 				-- proximity-sort can't do its thing
-		-- 				return "fd --type file --follow"
-		-- 			else
-		-- 				return vim.fn.printf(
-		-- 					"fd --type file --follow | proximity-sort %s",
-		-- 					vim.fn.shellescape(vim.fn.expand("%"))
-		-- 				)
-		-- 			end
-		-- 		end
-		--
-		-- 		local fzf_lua = require("fzf-lua")
-		-- 		fzf_lua.register_ui_select()
-		--
-		-- 		fzf_lua.setup({
-		-- 			defaults = {
-		-- 				git_icons = false,
-		-- 				file_icons = true,
-		-- 				color_icons = true,
-		-- 			},
-		-- 			keymap = {
-		-- 				fzf = {
-		-- 					["alt-n"] = "next-history",
-		-- 					["alt-p"] = "prev-history",
-		-- 					["ctrl-p"] = "up",
-		-- 					["ctrl-n"] = "down",
-		-- 				},
-		-- 			},
-		-- 			winopts = {
-		-- 				height = 0.55,
-		-- 				width = 0.55,
-		-- 				backdrop = 50,
-		-- 			},
-		-- 			fzf_history_dir = "~/.config/local/share/fzf-lua-history",
-		-- 			files = {
-		-- 				fzf_opts = {
-		-- 					["--history"] = vim.fn.stdpath("data") .. "/fzf-lua-files-history",
-		-- 				},
-		-- 				cwd_prompt = false,
-		-- 				actions = {
-		-- 					["ctrl-g"] = { actions.grep_lgrep },
-		-- 					["ctrl-r"] = { actions.toggle_ignore },
-		-- 				},
-		-- 			},
-		-- 			grep = {
-		-- 				fzf_opts = {
-		-- 					["--history"] = vim.fn.stdpath("data") .. "/fzf-lua-grep-history",
-		-- 				},
-		-- 				actions = {
-		-- 					-- actions inherit from 'actions.files' and merge
-		-- 					-- this action toggles between 'grep' and 'live_grep'
-		-- 					["ctrl-g"] = { actions.grep_lgrep },
-		-- 					["ctrl-r"] = { actions.toggle_ignore },
-		-- 				},
-		-- 			},
-		-- 		})
-		-- 		vim.keymap.set("", "<c-a-p>", require("fzf-lua").live_grep, { desc = "Fzf Files" })
-		-- 		vim.keymap.set("x", "<leader>pp", "<cmd>FzfLua grep_visual<CR>", { desc = "Grep" })
-		-- 		vim.keymap.set("", "<C-p>", function()
-		-- 			opts = {}
-		-- 			opts.cmd = "fd --color=never --hidden --type f --type l --exclude .git"
-		-- 			local base = vim.fn.fnamemodify(vim.fn.expand("%"), ":h:.:S")
-		-- 			if base ~= "." then
-		-- 				-- if there is no current file,
-		-- 				-- proximity-sort can't do its thing
-		-- 				opts.cmd = opts.cmd .. (" | proximity-sort %s"):format(vim.fn.shellescape(vim.fn.expand("%")))
-		-- 			end
-		-- 			opts.fzf_opts = {
-		-- 				["--scheme"] = "path",
-		-- 				["--tiebreak"] = "index",
-		-- 				["--layout"] = "reverse",
-		-- 			}
-		-- 			require("fzf-lua").files(opts)
-		-- 		end)
-		-- 		vim.keymap.set("n", "<leader>;", function()
-		-- 			require("fzf-lua").buffers({
-		-- 				-- just include the paths in the fzf bits, and nothing else
-		-- 				-- https://github.com/ibhagwan/fzf-lua/issues/2230#issuecomment-3164258823
-		-- 				fzf_opts = {
-		-- 					["--with-nth"] = "{-3..-2}",
-		-- 					["--nth"] = "-1",
-		-- 					["--delimiter"] = "[:\u{2002}]",
-		-- 					["--header-lines"] = "false",
-		-- 				},
-		-- 				header = false,
-		-- 			})
-		-- 		end)
-		-- 	end,
-		-- },
 		-- Conform - formatting
 		{
 			"stevearc/conform.nvim",
@@ -1115,7 +979,24 @@ require("lazy").setup({
 				}
 
 				--Tailwind
-				vim.lsp.config.tailwindcss = {}
+				vim.lsp.config.tailwindcss = {
+					filetypes = {
+						"html", "css", "scss",
+						"javascript", "javascriptreact",
+						"typescript", "typescriptreact",
+						"svelte", "vue", "astro",
+					},
+					settings = {
+						tailwindCSS = {
+							includeLanguages = {
+								javascript = "javascript",
+								javascriptreact = "javascript",
+								typescript = "javascript",
+								typescriptreact = "javascript",
+							},
+						},
+					},
+				}
 
 				--Vue
 				vim.lsp.config.vuels = {}
